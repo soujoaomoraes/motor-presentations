@@ -1,0 +1,368 @@
+<!doctype html>
+<html lang="pt-BR" data-modo="escuro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="motor-apresentacao" content="v3">
+<title>Café Aurora · Manual de atendimento</title>
+<!--
+╔══════════════════════════════════════════════════════════════════════╗
+  GUIA DE EDIÇÃO  (para pessoas e para qualquer IA que for editar)
+╚══════════════════════════════════════════════════════════════════════╝
+Apresentação interativa autossuficiente (funciona offline, um arquivo só).
+Partes, nesta ordem:
+  1. TEMA      <style id="tema">: identidade (cor de destaque, fonte) + cores do modo escuro e do claro.
+  2. ESTILO    <style id="estilo">: visual e animações próprios DESTA apresentação (layouts, transições, coreografia).
+  3. EFEITOS   <script id="efeitos">: opcional, efeitos especiais desta apresentação (ex.: número que conta).
+  4. CONTEÚDO  entre os marcadores INÍCIO/FIM DO CONTEÚDO. É aqui que se edita.
+  5. MOTOR     tudo abaixo de "MOTOR" (compactado). NÃO EDITAR. Não precisa nem ler.
+
+REGRAS
+- Cada slide é um <section class="slide" id="..." data-titulo="...">. Slide mede 1920x1080.
+- id: único, minúsculo, com hífen. É o link do slide: arquivo.html#id
+- Ordem no arquivo = ordem das setas ← →.
+- data-ramo: slide que só se alcança por botão (passo de runbook). data-fim: ramo que encerra um fluxo.
+- Botão de caminho: <a class="caminho" href="#destino"><strong>Texto</strong><small>detalhe</small></a>
+  O mapa (tecla M) é gerado a partir desses href. Nunca desenhe o mapa à mão.
+- Notas do apresentador: <aside class="notas">...</aside> no fim do slide. Só aparecem (e se editam) no modo apresentador.
+- O motor NÃO anima nada sozinho (só um esmaecimento curto entre slides). Animação é decisão de cada
+  apresentação, escrita no bloco ESTILO usando estes encaixes:
+    .slide.ativo (entrando/atual)  .slide.saindo (anterior, por ~1,2 s)  #palco[data-direcao="frente|tras"]
+    [data-passo] revela por clique (→): ganha .visto. Mesmo número aparecem juntos; vazio = ordem do arquivo.
+    Eventos no document: slide:entrou {slide, anterior, direcao}  slide:saiu  slide:passo {passo, total}
+  Miniaturas, apresentador e PDF mostram sempre o estado final. "Reduzir movimento" do sistema é respeitado.
+- Todo texto é editável direto no navegador. Não precisa marcar nada.
+- Modo inicial: <html data-modo="escuro"> ou "claro".
+
+TIPOS DE SLIDE (escolha pelo objetivo de quem pediu)
+  Apresentar ........ texto e componentes. Ex.: pitch.
+  Guiar (runbook) ... data-ramo + .caminho. Ex.: procedimento de suporte.
+  Preencher ......... .campo[data-dica] (caixa vazia com dica). Ex.: canvas de responsabilidades.
+  Mover / construir . objetos .livre soltos no slide, opcionalmente sobre um fundo (.area/.regua ou .zonas).
+                      Ex.: Moving Motivators, cadeia de valor, retro, mapa de empatia. Use class="slide topo".
+  Elemento específico de uma dinâmica (ex.: carta): crie no slide como .livre; as pessoas duplicam com Ctrl+D.
+
+OBJETOS LIVRES (arrastar, redimensionar, duplicar, apagar) — filhos diretos do <section>
+  class="livre <tipo>" + data-id único + style="left:..px; top:..px; width:..px"
+  Tipos: .postit  .texto  .forma[data-forma=ret|losango|elipse|triangulo]  .faixa (.lacuna)  .etiqueta
+         .tabela (<table> com th na 1ª linha)  .escala[data-min][data-max] (.escala-rot + .niveis > .nivel)
+         .imagem (<figure><img></figure>)  .desenho  .carta (<b>título</b><small>texto</small>)
+  Cor: data-cor="1..4" (cores do tema) ou cor livre: data-cor="x" + style="--cor:#hex; --cor-texto:#hex".
+  Conexão: <i class="liga" data-tipo="seta|linha|dupla" data-de="o1" data-para="o2"></i>
+           ponta solta em vez de objeto: data-x1/data-y1 ou data-x2/data-y2. Tracejada: data-tracejado. Cor: data-cor="1..4" ou "#hex".
+
+COMPONENTES DE TEXTO
+  .capa .centro .topo (no section)  .selo  h1 h2 h3 p  .sub  .fonte  <kbd>
+  .grade style="--colunas:3"  .cartao (.destaque)  .numero (<b>38</b><span>lojas</span>)  .lista  .rotulo
+  .aviso (.ok)  .passo > .bloco   .caminhos style="--colunas:3" > a.caminho (.sim .nao)
+  .canvas > .caixa (.larga .alta) > h3 + .campo     .campo.inline
+  .area > .regua (<span>esq</span><span>dir</span>)   .zonas (.colunas) > .zona (.ok .erro)
+  .etapas > .etapa (.cliente) > .campo
+
+COMO UMA IA DEVE EDITAR (economiza leitura)
+- Leia só do início até "FIM DO CONTEÚDO". Para mexer num slide, procure id="..." e altere só aquela <section>.
+- Para criar um slide, copie a <section> mais parecida e troque id, data-titulo e textos.
+- Para mudar a marca, edite só o bloco :root do TEMA (destaque, fonte) e, se precisar, as cores de cada modo.
+-->
+<style id="tema">
+/* ═══ TEMA ═══
+   1) Identidade: vale para os dois modos. Troque aqui a cor e a fonte da marca.
+   2) Superfícies: cores de fundo e texto de cada modo. A tecla T alterna escuro / claro. */
+:root {
+  --destaque:#c9a46c; --sobre-destaque:#16130f;
+  --ok:#8fae8b; --alerta:#d0a061; --erro:#c27670;
+  --postit-1:#e6d6a8; --postit-2:#c9d8c1; --postit-3:#e3c4b9; --postit-4:#c5cfdc;
+  --fonte:"Inter","Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;
+  --raio:20px;
+}
+:root, [data-modo="escuro"] {
+  --fundo:#0b0b0c; --superficie:#141416; --superficie-2:#1b1b1e; --borda:#2a2a2f;
+  --texto:#ededee; --texto-2:#a3a3a8; --texto-3:#6e6e74;
+}
+[data-modo="claro"] {
+  --fundo:#f6f5f2; --superficie:#ffffff; --superficie-2:#eeece7; --borda:#dcd9d1;
+  --texto:#1b1a18; --texto-2:#55524c; --texto-3:#8b877e;
+  --destaque:#8c6a33; --sobre-destaque:#ffffff;
+  --ok:#4f7a55; --alerta:#a8742d; --erro:#a5483f;
+}
+</style>
+<style id="estilo">
+/* ═══ ESTILO DESTA APRESENTAÇÃO ═══ Café Aurora: ritmo calmo, entradas curtas de baixo para cima,
+   transição que acompanha a direção da navegação, lista revelada por clique, números que contam. */
+@keyframes ca-sobe{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
+@keyframes ca-entra-dir{from{opacity:0;transform:translateX(60px)}to{opacity:1;transform:none}}
+@keyframes ca-entra-esq{from{opacity:0;transform:translateX(-60px)}to{opacity:1;transform:none}}
+#palco[data-direcao="frente"] .slide.ativo{animation:ca-entra-dir .5s cubic-bezier(.2,.7,.2,1) both}
+#palco[data-direcao="tras"] .slide.ativo{animation:ca-entra-esq .5s cubic-bezier(.2,.7,.2,1) both}
+.slide.ativo>.selo,.slide.ativo>h1,.slide.ativo>h2,.slide.ativo>.sub,.slide.ativo>.grade,.slide.ativo>.passo,.slide.ativo>.caminhos{animation:ca-sobe .6s cubic-bezier(.2,.7,.2,1) both}
+.slide.ativo>h1,.slide.ativo>h2{animation-delay:.08s}.slide.ativo>.sub{animation-delay:.16s}
+.slide.ativo>.grade,.slide.ativo>.passo,.slide.ativo>.caminhos{animation-delay:.22s}
+[data-passo]{transition:opacity .45s ease,transform .45s cubic-bezier(.2,.7,.2,1)}
+[data-passo]:not(.visto){visibility:visible;opacity:.12;transform:translateX(-14px)}
+</style>
+<script id="efeitos">
+/* ═══ EFEITOS DESTA APRESENTAÇÃO ═══ Números com data-contar sobem de 0 até o valor escrito. */
+document.addEventListener('slide:entrou', e => {
+  e.target.querySelectorAll('[data-contar]').forEach(n => {
+    if (n._anim) return; const fim = n.textContent, alvo = parseFloat(fim.replace(',', '.')), suf = fim.replace(/^[\d.,\s]+/, '');
+    if (isNaN(alvo) || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const t0 = performance.now(), dur = 1100; n._anim = true;
+    const tick = t => { const p = Math.min(1, (t - t0) / dur), v = alvo * (1 - Math.pow(1 - p, 3)); n.textContent = (Number.isInteger(alvo) ? Math.round(v) : v.toFixed(1)) + suf; if (p < 1) requestAnimationFrame(tick); else { n.textContent = fim; n._anim = false; } };
+    requestAnimationFrame(tick);
+  });
+});
+</script>
+</head>
+<body>
+<main id="palco">
+<!-- ═══════════════════════ INÍCIO DO CONTEÚDO ═══════════════════════ -->
+
+<section class="slide capa" id="capa" data-titulo="Capa">
+  <span class="selo">Protótipo · modelo interativo</span>
+  <h1>Café Aurora</h1>
+  <p class="sub">Manual vivo de atendimento das lojas</p>
+  <p class="fonte">Aperte <kbd>?</kbd> para ver os atalhos</p>
+  <aside class="notas">Abrir com calma. A ideia central: um arquivo só, que serve para apresentar, consultar e editar.</aside>
+</section>
+
+<section class="slide" id="numeros" data-titulo="A operação em números">
+  <span class="selo">Contexto</span>
+  <h2>A operação em números</h2>
+  <div class="grade" style="--colunas:3">
+    <div class="cartao numero"><b data-contar>38</b><span>lojas em 4 cidades</span></div>
+    <div class="cartao numero"><b>4 min</b><span>tempo médio de atendimento</span></div>
+    <div class="cartao numero destaque"><b data-contar>92%</b><span>clientes satisfeitos</span></div>
+  </div>
+  <p class="fonte">Dados fictícios, só para o protótipo.</p>
+  <aside class="notas">Comentar que os 92% vieram da pesquisa do último trimestre. Pausar antes de passar.</aside>
+</section>
+
+<section class="slide" id="o-que-muda" data-titulo="O que muda">
+  <span class="selo">Proposta</span>
+  <h2>Um manual que responde, em vez de um manual que se lê</h2>
+  <div class="grade" style="--colunas:2">
+    <ul class="lista">
+      <li data-passo>Escolha o problema e siga o caminho</li>
+      <li data-passo>Cada passo tem uma ação e uma verificação</li>
+      <li data-passo>Se não resolver, o fluxo diz quando escalar</li>
+    </ul>
+    <div class="cartao">
+      <span class="rotulo">Por que funciona</span>
+      <p>O atendente não precisa decorar nada. Ele responde perguntas simples e chega na solução.</p>
+    </div>
+  </div>
+  <p class="livre etiqueta" style="left:1420px; top:110px">Objeto livre: arraste, puxe o canto ou apague com Delete</p>
+  <aside class="notas">A lista aparece item a item a cada →. Mostrar que todo texto é editável direto e que o objeto livre se move com o mouse.</aside>
+</section>
+
+<section class="slide" id="triagem" data-titulo="Triagem">
+  <span class="selo">Runbook</span>
+  <h2>Qual é o problema?</h2>
+  <p class="sub">Escolha um caminho. Aperte <kbd>M</kbd> para ver o mapa completo.</p>
+  <nav class="caminhos" style="--colunas:3">
+    <a class="caminho" href="#maquina-tomada"><strong>Máquina não liga</strong><small>Painel apagado</small></a>
+    <a class="caminho" href="#cafe-moagem"><strong>Café saindo fraco</strong><small>Sabor aguado</small></a>
+    <a class="caminho" href="#pagamento-reiniciar"><strong>Pagamento recusado</strong><small>Erro na maquininha</small></a>
+  </nav>
+  <aside class="notas">Clicar em um caminho ao vivo. Depois da demonstração, seta → segue para o quadro.</aside>
+</section>
+
+<section class="slide" id="maquina-tomada" data-ramo data-titulo="Máquina: tomada">
+  <span class="selo">Máquina não liga · passo 1 de 2</span>
+  <h2>Verifique a tomada e o cabo</h2>
+  <div class="passo">
+    <div class="bloco"><span class="rotulo">Ação</span><p>Confira se o cabo está firme na tomada e na máquina. Teste a tomada com outro aparelho.</p></div>
+    <div class="bloco"><span class="rotulo">Verificação</span><p>O painel acendeu?</p></div>
+  </div>
+  <nav class="caminhos">
+    <a class="caminho sim" href="#resolvido"><strong>Sim, acendeu</strong><small>Problema resolvido</small></a>
+    <a class="caminho nao" href="#maquina-disjuntor"><strong>Não</strong><small>Ir para o passo 2</small></a>
+  </nav>
+</section>
+
+<section class="slide" id="maquina-disjuntor" data-ramo data-titulo="Máquina: disjuntor">
+  <span class="selo">Máquina não liga · passo 2 de 2</span>
+  <h2>Verifique o disjuntor da bancada</h2>
+  <div class="passo">
+    <div class="bloco"><span class="rotulo">Ação</span><p>No quadro de energia, procure o disjuntor "Bancada". Se estiver para baixo, suba uma vez.</p></div>
+    <div class="bloco"><span class="rotulo">Verificação</span><p>A máquina ligou e o disjuntor ficou estável?</p></div>
+  </div>
+  <div class="aviso">Se o disjuntor cair de novo, não insista. Escale.</div>
+  <nav class="caminhos">
+    <a class="caminho sim" href="#resolvido"><strong>Sim, ligou</strong></a>
+    <a class="caminho nao" href="#escalar"><strong>Não</strong><small>Escalar para o N2</small></a>
+  </nav>
+</section>
+
+<section class="slide" id="cafe-moagem" data-ramo data-titulo="Café: moagem">
+  <span class="selo">Café fraco · passo 1 de 2</span>
+  <h2>Ajuste a moagem para mais fina</h2>
+  <div class="passo">
+    <div class="bloco"><span class="rotulo">Ação</span><p>Gire o seletor do moinho dois pontos para "fino" e descarte a primeira dose.</p></div>
+    <div class="bloco"><span class="rotulo">Verificação</span><p>A extração levou entre 25 e 30 segundos?</p></div>
+  </div>
+  <nav class="caminhos">
+    <a class="caminho sim" href="#resolvido"><strong>Sim</strong><small>Sabor normal</small></a>
+    <a class="caminho nao" href="#cafe-dose"><strong>Não</strong><small>Ir para o passo 2</small></a>
+  </nav>
+</section>
+
+<section class="slide" id="cafe-dose" data-ramo data-titulo="Café: dose">
+  <span class="selo">Café fraco · passo 2 de 2</span>
+  <h2>Pese a dose de café</h2>
+  <div class="passo">
+    <div class="bloco"><span class="rotulo">Ação</span><p>Pese o pó no porta-filtro. O padrão da casa é 18 g.</p></div>
+    <div class="bloco"><span class="rotulo">Verificação</span><p>Com 18 g, o café saiu encorpado?</p></div>
+  </div>
+  <nav class="caminhos">
+    <a class="caminho sim" href="#resolvido"><strong>Sim</strong></a>
+    <a class="caminho nao" href="#escalar"><strong>Não</strong><small>Escalar para o N2</small></a>
+  </nav>
+</section>
+
+<section class="slide" id="pagamento-reiniciar" data-ramo data-titulo="Pagamento: reiniciar">
+  <span class="selo">Pagamento recusado · passo 1 de 2</span>
+  <h2>Reinicie a maquininha</h2>
+  <div class="passo">
+    <div class="bloco"><span class="rotulo">Ação</span><p>Segure o botão de energia por 5 segundos, espere desligar e ligue de novo.</p></div>
+    <div class="bloco"><span class="rotulo">Verificação</span><p>Uma venda de teste de R$ 1,00 foi aprovada?</p></div>
+  </div>
+  <nav class="caminhos">
+    <a class="caminho sim" href="#resolvido"><strong>Sim, aprovou</strong></a>
+    <a class="caminho nao" href="#pagamento-conexao"><strong>Não</strong><small>Ir para o passo 2</small></a>
+  </nav>
+</section>
+
+<section class="slide" id="pagamento-conexao" data-ramo data-titulo="Pagamento: conexão">
+  <span class="selo">Pagamento recusado · passo 2 de 2</span>
+  <h2>Troque a conexão da maquininha</h2>
+  <div class="passo">
+    <div class="bloco"><span class="rotulo">Ação</span><p>Em Configurações › Rede, troque de Wi-Fi para chip (ou o contrário).</p></div>
+    <div class="bloco"><span class="rotulo">Verificação</span><p>A venda de teste foi aprovada?</p></div>
+  </div>
+  <nav class="caminhos">
+    <a class="caminho sim" href="#resolvido"><strong>Sim</strong></a>
+    <a class="caminho nao" href="#escalar"><strong>Não</strong><small>Escalar para o N2</small></a>
+  </nav>
+</section>
+
+<section class="slide centro" id="resolvido" data-ramo data-fim data-titulo="Resolvido">
+  <span class="selo">Fim do fluxo</span>
+  <h2>Resolvido</h2>
+  <div class="aviso ok">Registre o atendimento no sistema com a categoria do problema.</div>
+  <nav class="caminhos" style="--colunas:1">
+    <a class="caminho" href="#triagem"><strong>Voltar à triagem</strong></a>
+  </nav>
+</section>
+
+<section class="slide" id="escalar" data-ramo data-fim data-titulo="Escalar para o N2">
+  <span class="selo">Fim do fluxo</span>
+  <h2>Escalar para o N2</h2>
+  <div class="grade" style="--colunas:2">
+    <ul class="lista">
+      <li>Loja e equipamento</li>
+      <li>Passos que você já fez</li>
+      <li>Foto do painel ou da tela de erro</li>
+    </ul>
+    <div class="cartao destaque"><span class="rotulo">Canal</span><p>Abra um chamado na categoria "Equipamento" com prioridade alta.</p></div>
+  </div>
+  <nav class="caminhos" style="--colunas:1">
+    <a class="caminho" href="#triagem"><strong>Voltar à triagem</strong></a>
+  </nav>
+</section>
+
+<section class="slide topo" id="retro" data-titulo="Quadro: retro da semana">
+  <span class="selo">Construir juntos</span>
+  <h2>Retro da semana</h2>
+  <div class="livre postit" data-id="o1" data-cor="1" style="left:200px; top:370px">Fila no almoço passou de 10 pessoas</div>
+  <div class="livre postit" data-id="o2" data-cor="3" style="left:200px; top:630px">Moinho da loja Centro desregulado 3 vezes</div>
+  <div class="livre forma" data-forma="losango" data-id="o3" style="left:640px; top:490px; width:300px; height:190px">Dá para resolver na loja?</div>
+  <div class="livre postit" data-id="o4" data-cor="2" style="left:1100px; top:360px">Abrir um segundo caixa das 12h às 14h</div>
+  <div class="livre forma" data-forma="ret" data-id="o5" style="left:1100px; top:660px; width:280px; height:130px">Chamar a manutenção</div>
+  <div class="livre texto" data-id="o6" data-cor="1" style="left:1470px; top:390px">Responsável: gerente</div>
+  <i class="liga" data-de="o1" data-para="o3"></i>
+  <i class="liga" data-de="o2" data-para="o3"></i>
+  <i class="liga" data-de="o3" data-para="o4"></i>
+  <i class="liga" data-de="o3" data-para="o5"></i>
+  <aside class="notas">Tudo aqui é solto no slide. Inserir (tecla I) traz formas, conexões e post-its. Para ligar, escolha Seta e arraste de um objeto até outro.</aside>
+</section>
+
+<section class="slide" id="canvas-equipe" data-titulo="Canvas da equipe">
+  <span class="selo">Para preencher · cada equipe escreve a sua</span>
+  <h2>Canvas da equipe: <span class="campo inline" data-dica="nome da equipe"></span></h2>
+  <div class="canvas" style="--colunas:3">
+    <div class="caixa larga"><h3>Missão</h3><div class="campo" data-dica="Em uma frase: por que a equipe existe e para quem trabalha"></div></div>
+    <div class="caixa alta"><h3>O que fazemos</h3><div class="campo" data-dica="Atividades que são nossas. Comece cada item com um verbo."></div></div>
+    <div class="caixa alta"><h3>O que não fazemos → vai para</h3><div class="campo" data-dica="O que chega errado para nós e para qual equipe deve ir"></div></div>
+    <div class="caixa"><h3>Como nos acionar</h3><div class="campo" data-dica="Canal oficial (chamado, e-mail, grupo)"></div></div>
+    <div class="caixa"><h3>O que precisamos receber</h3><div class="campo" data-dica="Informações mínimas para começar"></div></div>
+  </div>
+  <aside class="notas">Os campos funcionam sempre, sem modo edição. Depois de preencher, Ctrl+S salva a cópia.</aside>
+</section>
+
+<section class="slide" id="priorize" data-titulo="Dinâmica: priorize as cartas">
+  <span class="selo">Dinâmica · passo 1</span>
+  <h2>Priorize suas cartas</h2>
+  <p>Arraste as cartas pela tela até ficarem na sua ordem. Duplo clique edita o texto.</p>
+  <div class="area"><div class="regua"><span>← Menos importante</span><span>Mais importante →</span></div></div>
+  <div class="cartao"><span class="rotulo">Anotações</span><div class="campo" data-dica="Por que essas cartas ficaram no topo?"></div></div>
+  <div class="livre carta" data-id="c1" data-cor="1" style="left:150px; top:430px"><b>Curiosidade</b><small>Ter coisas novas para aprender</small></div>
+  <div class="livre carta" data-id="c2" data-cor="2" style="left:385px; top:430px"><b>Autonomia</b><small>Decidir como faço meu trabalho</small></div>
+  <div class="livre carta" data-id="c3" data-cor="3" style="left:620px; top:430px"><b>Reconhecimento</b><small>Ver meu esforço valorizado</small></div>
+  <div class="livre carta" data-id="c4" data-cor="4" style="left:855px; top:430px"><b>Domínio</b><small>Ficar muito bom no que faço</small></div>
+  <div class="livre carta" data-id="c5" data-cor="1" style="left:1090px; top:430px"><b>Propósito</b><small>Sentir que o trabalho importa</small></div>
+  <div class="livre carta" data-id="c6" data-cor="2" style="left:1325px; top:430px"><b>Convivência</b><small>Gostar das pessoas ao redor</small></div>
+  <div class="livre carta" data-id="c7" data-cor="3" style="left:1560px; top:430px"><b>Estabilidade</b><small>Saber o que esperar</small></div>
+</section>
+
+<section class="slide" id="impacto" data-titulo="Dinâmica: impacto da mudança">
+  <span class="selo">Dinâmica · passo 2</span>
+  <h2>Como a mudança te afeta?</h2>
+  <p class="sub">Mudança: <span class="campo inline" data-dica="descreva a situação"></span></p>
+  <div class="zonas"><div class="zona ok">Impacto positivo</div><div class="zona">Sem impacto</div><div class="zona erro">Impacto negativo</div></div>
+  <div class="livre carta" data-id="c1" data-cor="1" style="left:150px; top:650px; min-height:0"><b>Curiosidade</b></div>
+  <div class="livre carta" data-id="c2" data-cor="2" style="left:385px; top:650px; min-height:0"><b>Autonomia</b></div>
+  <div class="livre carta" data-id="c3" data-cor="3" style="left:620px; top:650px; min-height:0"><b>Reconhecimento</b></div>
+  <div class="livre carta" data-id="c4" data-cor="4" style="left:855px; top:650px; min-height:0"><b>Domínio</b></div>
+  <div class="livre carta" data-id="c5" data-cor="1" style="left:1090px; top:650px; min-height:0"><b>Propósito</b></div>
+  <div class="livre carta" data-id="c6" data-cor="2" style="left:1325px; top:650px; min-height:0"><b>Convivência</b></div>
+  <div class="livre carta" data-id="c7" data-cor="3" style="left:1560px; top:650px; min-height:0"><b>Estabilidade</b></div>
+  <aside class="notas">Cada pessoa arrasta as cartas para cima ou para baixo. O valor está na conversa depois.</aside>
+</section>
+
+<section class="slide topo" id="jornada" data-titulo="Diagrama: jornada do pedido">
+  <span class="selo">Construir juntos · diagrama</span>
+  <h2>Quem cuida de cada etapa</h2>
+  <div class="etapas">
+    <div class="etapa"><div class="campo">Pedido</div></div>
+    <div class="etapa"><div class="campo">Pagamento</div></div>
+    <div class="etapa cliente"><div class="campo">Cliente espera</div></div>
+    <div class="etapa"><div class="campo">Preparo</div></div>
+    <div class="etapa"><div class="campo">Entrega</div></div>
+    <div class="etapa cliente"><div class="campo">Cliente recebe</div></div>
+  </div>
+  <div class="livre faixa" data-id="f1" data-cor="1" style="left:164px; top:500px; width:640px">Caixa</div>
+  <div class="livre faixa" data-id="f2" data-cor="2" style="left:780px; top:580px; width:560px">Baristas</div>
+  <div class="livre faixa" data-id="f3" data-cor="4" style="left:164px; top:660px; width:1592px">Gerência da loja</div>
+  <div class="livre faixa lacuna" data-id="f4" style="left:1380px; top:500px; width:376px">Lacuna: quem entrega?</div>
+  <p class="livre etiqueta" data-id="f5" style="left:164px; top:780px">Selecione uma faixa e duplique (Ctrl+D) para adicionar equipes. Estique pelo canto.</p>
+  <aside class="notas">As etapas são campos: clique e escreva. As faixas se arrastam e esticam.</aside>
+</section>
+
+<section class="slide topo" id="pesquisa" data-titulo="Elementos: tabela e escala">
+  <span class="selo">Elementos</span>
+  <h2>Pesquisa rápida e plano de ação</h2>
+  <div class="livre escala" data-id="e1" data-min="0" data-max="10" style="left:140px; top:330px; width:820px"><span class="escala-rot">De 0 a 10, quanto você recomendaria a loja?</span><div class="niveis"><span class="nivel">0</span><span class="nivel">1</span><span class="nivel">2</span><span class="nivel">3</span><span class="nivel">4</span><span class="nivel">5</span><span class="nivel">6</span><span class="nivel">7</span><span class="nivel">8</span><span class="nivel">9</span><span class="nivel">10</span></div></div>
+  <div class="livre escala" data-id="e2" data-min="1" data-max="5" style="left:1040px; top:330px; width:740px"><span class="escala-rot">Clareza do treinamento</span><div class="niveis"><span class="nivel">1</span><span class="nivel">2</span><span class="nivel">3</span><span class="nivel">4</span><span class="nivel">5</span></div></div>
+  <div class="livre tabela" data-id="e3" style="left:140px; top:560px; width:1640px"><table><tr><th>O quê</th><th>Quem</th><th>Até quando</th></tr><tr><td>Segundo caixa no almoço</td><td>Gerente</td><td>Próxima semana</td></tr><tr><td>Treinar regulagem do moinho</td><td>Baristas</td><td>Fim do mês</td></tr></table></div>
+  <aside class="notas">Clique num número para marcar. Duplo clique na tabela edita; Tab passa para a próxima célula. Com a tabela selecionada, a barrinha adiciona linha e coluna.</aside>
+</section>
+
+<section class="slide capa centro" id="fim" data-titulo="Encerramento">
+  <span class="selo">Café Aurora</span>
+  <h1>Obrigado</h1>
+  <p class="sub">Este arquivo é o modelo base da skill.</p>
+</section>
+
+<!-- ═══════════════════════ FIM DO CONTEÚDO ═══════════════════════ -->
+</main>
