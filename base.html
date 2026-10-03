@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="pt-BR" data-modo="escuro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="motor-apresentacao" content="v3">
+<title>TÍTULO DA APRESENTAÇÃO</title>
+<!--
+╔══════════════════════════════════════════════════════════════════════╗
+  GUIA DE EDIÇÃO  (para pessoas e para qualquer IA que for editar)
+╚══════════════════════════════════════════════════════════════════════╝
+Apresentação interativa autossuficiente (funciona offline, um arquivo só).
+Partes, nesta ordem:
+  1. TEMA      <style id="tema">: identidade (cor de destaque, fonte) + cores do modo escuro e do claro.
+  2. ESTILO    <style id="estilo">: visual e animações próprios DESTA apresentação (layouts, transições, coreografia).
+  3. EFEITOS   <script id="efeitos">: opcional, efeitos especiais desta apresentação (ex.: número que conta).
+  4. CONTEÚDO  entre os marcadores INÍCIO/FIM DO CONTEÚDO. É aqui que se edita.
+  5. MOTOR     tudo abaixo de "MOTOR" (compactado). NÃO EDITAR. Não precisa nem ler.
+
+REGRAS
+- Cada slide é um <section class="slide" id="..." data-titulo="...">. Slide mede 1920x1080.
+- id: único, minúsculo, com hífen. É o link do slide: arquivo.html#id
+- Ordem no arquivo = ordem das setas ← →.
+- data-ramo: slide que só se alcança por botão (passo de runbook). data-fim: ramo que encerra um fluxo.
+- Botão de caminho: <a class="caminho" href="#destino"><strong>Texto</strong><small>detalhe</small></a>
+  O mapa (tecla M) é gerado a partir desses href. Nunca desenhe o mapa à mão.
+- Notas do apresentador: <aside class="notas">...</aside> no fim do slide. Só aparecem (e se editam) no modo apresentador.
+- O motor NÃO anima nada sozinho (só um esmaecimento curto entre slides). Animação é decisão de cada
+  apresentação, escrita no bloco ESTILO usando estes encaixes:
+    .slide.ativo (entrando/atual)  .slide.saindo (anterior, por ~1,2 s)  #palco[data-direcao="frente|tras"]
+    [data-passo] revela por clique (→): ganha .visto. Mesmo número aparecem juntos; vazio = ordem do arquivo.
+    Eventos no document: slide:entrou {slide, anterior, direcao}  slide:saiu  slide:passo {passo, total}
+  Miniaturas, apresentador e PDF mostram sempre o estado final. "Reduzir movimento" do sistema é respeitado.
+- Todo texto é editável direto no navegador. Não precisa marcar nada.
+- Modo inicial: <html data-modo="escuro"> ou "claro".
+
+TIPOS DE SLIDE (escolha pelo objetivo de quem pediu)
+  Apresentar ........ texto e componentes. Ex.: pitch.
+  Guiar (runbook) ... data-ramo + .caminho. Ex.: procedimento de suporte.
+  Preencher ......... .campo[data-dica] (caixa vazia com dica). Ex.: canvas de responsabilidades.
+  Mover / construir . objetos .livre soltos no slide, opcionalmente sobre um fundo (.area/.regua ou .zonas).
+                      Ex.: Moving Motivators, cadeia de valor, retro, mapa de empatia. Use class="slide topo".
+  Elemento específico de uma dinâmica (ex.: carta): crie no slide como .livre; as pessoas duplicam com Ctrl+D.
+
+OBJETOS LIVRES (arrastar, redimensionar, duplicar, apagar) — filhos diretos do <section>
+  class="livre <tipo>" + data-id único + style="left:..px; top:..px; width:..px"
+  Tipos: .postit  .texto  .forma[data-forma=ret|losango|elipse|triangulo]  .faixa (.lacuna)  .etiqueta
+         .tabela (<table> com th na 1ª linha)  .escala[data-min][data-max] (.escala-rot + .niveis > .nivel)
+         .imagem (<figure><img></figure>)  .desenho  .carta (<b>título</b><small>texto</small>)
+  Cor: data-cor="1..4" (cores do tema) ou cor livre: data-cor="x" + style="--cor:#hex; --cor-texto:#hex".
+  Conexão: <i class="liga" data-tipo="seta|linha|dupla" data-de="o1" data-para="o2"></i>
+           ponta solta em vez de objeto: data-x1/data-y1 ou data-x2/data-y2. Tracejada: data-tracejado. Cor: data-cor="1..4" ou "#hex".
+
+COMPONENTES DE TEXTO
+  .capa .centro .topo (no section)  .selo  h1 h2 h3 p  .sub  .fonte  <kbd>
+  .grade style="--colunas:3"  .cartao (.destaque)  .numero (<b>38</b><span>lojas</span>)  .lista  .rotulo
+  .aviso (.ok)  .passo > .bloco   .caminhos style="--colunas:3" > a.caminho (.sim .nao)
+  .canvas > .caixa (.larga .alta) > h3 + .campo     .campo.inline
+  .area > .regua (<span>esq</span><span>dir</span>)   .zonas (.colunas) > .zona (.ok .erro)
+  .etapas > .etapa (.cliente) > .campo
+
+COMO UMA IA DEVE EDITAR (economiza leitura)
+- Leia só do início até "FIM DO CONTEÚDO". Para mexer num slide, procure id="..." e altere só aquela <section>.
+- Para criar um slide, copie a <section> mais parecida e troque id, data-titulo e textos.
+- Para mudar a marca, edite só o bloco :root do TEMA (destaque, fonte) e, se precisar, as cores de cada modo.
+-->
+<style id="tema">
+/* ═══ TEMA ═══
+   1) Identidade: vale para os dois modos. Troque aqui a cor e a fonte da marca.
+   2) Superfícies: cores de fundo e texto de cada modo. A tecla T alterna escuro / claro. */
+:root {
+  --destaque:#c9a46c; --sobre-destaque:#16130f;
+  --ok:#8fae8b; --alerta:#d0a061; --erro:#c27670;
+  --postit-1:#e6d6a8; --postit-2:#c9d8c1; --postit-3:#e3c4b9; --postit-4:#c5cfdc;
+  --fonte:"Inter","Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;
+  --raio:20px;
+}
+:root, [data-modo="escuro"] {
+  --fundo:#0b0b0c; --superficie:#141416; --superficie-2:#1b1b1e; --borda:#2a2a2f;
+  --texto:#ededee; --texto-2:#a3a3a8; --texto-3:#6e6e74;
+}
+[data-modo="claro"] {
+  --fundo:#f6f5f2; --superficie:#ffffff; --superficie-2:#eeece7; --borda:#dcd9d1;
+  --texto:#1b1a18; --texto-2:#55524c; --texto-3:#8b877e;
+  --destaque:#8c6a33; --sobre-destaque:#ffffff;
+  --ok:#4f7a55; --alerta:#a8742d; --erro:#a5483f;
+}
+</style>
+<style id="estilo">
+/* ═══ ESTILO DESTA APRESENTAÇÃO ═══ Direção visual e de movimento escolhida para ESTE assunto.
+   Encaixes: .slide.ativo  .slide.saindo  #palco[data-direcao="frente|tras"]  [data-passo] + .visto */
+</style>
+<script id="efeitos">
+/* ═══ EFEITOS DESTA APRESENTAÇÃO ═══ Opcional. Ex.: document.addEventListener('slide:entrou', e => { ... }) */
+</script>
+</head>
+<body>
+<main id="palco">
+<!-- ═══════════════════════ INÍCIO DO CONTEÚDO ═══════════════════════ -->
+
+<!-- SLIDES AQUI -->
+
+<!-- ═══════════════════════ FIM DO CONTEÚDO ═══════════════════════ -->
+</main>
