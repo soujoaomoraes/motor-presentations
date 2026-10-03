@@ -1,4 +1,4 @@
-# Motor de Apresentações HTML
+# Motor de Apresentações
 
 Base das apresentações interativas em um arquivo só (funciona offline): tela cheia, apresentador com notas,
 runbook com mapa de caminhos, texto editável, objetos livres, conexões, tabela, escala, cores, PDF e salvar no próprio arquivo.
@@ -17,7 +17,7 @@ Usado pela skill `apresentacao-html-interativa`. A skill baixa os arquivos diret
 ## Usar
 
 ```bash
-V=v3; U=https://raw.githubusercontent.com/soujoaomoraes/motor-apresentacoes/$V
+V=v3; U=https://raw.githubusercontent.com/soujoaomoraes/motor-presentations/$V
 curl -sLO $U/base.html && curl -sLO $U/motor.min.html && curl -sLO $U/montar.py
 python3 montar.py . apresentacao.html
 ```
