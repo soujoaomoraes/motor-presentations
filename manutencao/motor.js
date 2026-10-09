@@ -423,12 +423,13 @@ function abrirApresentador() {
   d.write(`<!doctype html><html data-modo="${esc(document.documentElement.dataset.modo || '')}"><head><meta charset="utf-8"><title>Apresentador · ${esc(document.title)}</title><style>${css}</style></head><body class="ap ui">
     <div class="ap-topo"><span class="ap-tempo" id="t">00:00</span><button id="zerar">Zerar</button><span class="ap-pos" id="pos"></span><span class="ap-hora" id="hora"></span></div>
     <div class="ap-grade">
-      <div class="ap-esq" id="esq"><div class="ap-rot">Agora</div><div class="ap-moldura" id="agora"></div></div>
-      <div class="ap-dir" id="dir"><div class="ap-rot">Próximo</div><div class="ap-moldura" id="prox"></div><div class="ap-cams" id="cams"></div>
+      <div class="ap-esq" id="esq"><div class="ap-rot">Agora</div><div class="ap-moldura" id="agora"></div>
+        <div class="ap-rot ap-rot-prox">Próximo</div><div class="ap-prox-linha"><div class="ap-moldura" id="prox"></div><div class="ap-lado"><div class="ap-pe"><button id="ant">◀ Voltar</button><button id="seg">Avançar ▶</button></div><div class="ap-cams" id="cams"></div></div></div></div>
+      <div class="ap-dir" id="dir">
         <div class="ap-notas-cab"><span class="ap-rot">Notas <small>clique e escreva</small></span><span class="ap-fonte"><button id="fmenos" title="Diminuir fonte">A−</button><span id="ftam"></span><button id="fmais" title="Aumentar fonte">A+</button></span></div>
         <div class="ap-notas" id="notas" contenteditable="true" spellcheck="false"></div></div>
     </div>
-    <div class="ap-pe"><button id="ant">◀ Voltar</button><button id="seg">Avançar ▶</button></div></body></html>`);
+    </body></html>`);
   d.close();
   popInicio = Date.now();
   const notas = d.getElementById('notas');
@@ -475,16 +476,18 @@ function sincronizarApresentador(soMolduras) {
   }
   const esq = d.getElementById('esq'), dir = d.getElementById('dir'), grade = esq.parentElement;
   const vazio = txt => `<div class="ap-vazio">${txt}</div>`;
-  // atual: o maior possível na coluna esquerda
+  // coluna esquerda: atual grande em cima, próximo menor embaixo; coluna direita: só notas, altura toda
+  const rot = 27, folga = 14, livre = Math.max(200, grade.clientHeight - 2 * rot - folga);
+  const hA = Math.max(120, Math.min(grade.clientWidth * 0.66 * H / W, livre * 0.74)), wA = Math.round(hA * W / H);
+  esq.style.width = wA + 'px';
   const ag = d.getElementById('agora'); ag.innerHTML = '';
-  const wA = Math.max(200, Math.min(esq.clientWidth, (grade.clientHeight - 26) * W / H));
   ag.append(d.adoptNode(mini(atual, wA)));
-  // coluna direita com a mesma altura do slide atual: próximo menor em cima, notas ocupando o resto
-  dir.style.height = esq.offsetHeight + 'px';
-  const pr = d.getElementById('prox'); pr.innerHTML = '';
+  const wP = Math.max(120, Math.round(Math.min(wA * 0.5, (livre - hA) * W / H)));
+  const pr = d.getElementById('prox'); pr.innerHTML = ''; pr.style.width = wP + 'px';
   const p = proximoDe(atual);
-  if (p) pr.append(d.adoptNode(mini(p, Math.round(dir.clientWidth * 0.62))));
+  if (p) pr.append(d.adoptNode(mini(p, wP)));
   else pr.innerHTML = vazio(ramo(atual) ? 'Escolha um caminho abaixo' : 'Fim da apresentação');
+  dir.style.height = esq.offsetHeight + 'px'; // notas terminam junto com o próximo slide
 }
 
 /* ── tela cheia, PDF, modo ── */

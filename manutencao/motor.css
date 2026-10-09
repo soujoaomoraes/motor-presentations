@@ -290,9 +290,16 @@ body.ap{height:100vh;overflow:hidden;padding:16px 18px;display:flex;flex-directi
 .ap-tempo{font-size:32px;font-weight:600;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
 .ap-pos{color:var(--texto-3);font-size:14px}
 .ap-hora{margin-left:auto;color:var(--texto-2);font-size:20px;font-variant-numeric:tabular-nums}
-.ap-grade{flex:1;min-height:0;display:grid;grid-template-columns:1.55fr 1fr;gap:18px;align-items:start}
+.ap-grade{flex:1;min-height:0;display:grid;grid-template-columns:auto 1fr;gap:22px;align-items:start}
 .ap-esq,.ap-dir{min-width:0}
 .ap-dir{display:flex;flex-direction:column;min-height:0}
+.ap-dir>.ap-notas-cab{margin-top:0;height:14px}
+.ap-dir>.ap-notas-cab .ap-fonte button{padding:2px 8px}
+.ap-rot.ap-rot-prox{margin-top:16px}
+.ap-prox-linha{display:flex;gap:14px;align-items:flex-start}
+.ap-lado{flex:1;min-width:0;display:flex;flex-direction:column;gap:10px}
+.ap-lado .ap-cams{margin:0}
+.ap-lado .ap-pe button{flex:1;justify-content:center}
 .ap-rot{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--texto-3);margin:0 0 8px;font-weight:600}
 .ap-rot small{letter-spacing:0;text-transform:none;font-weight:400;margin-left:6px}
 .ap-moldura{flex:none}
